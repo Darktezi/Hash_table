@@ -42,3 +42,21 @@ TEST(HashTableTest, Size) {
     HashTable<int, std::string> hashTable(10);
     EXPECT_EQ(hashTable.getSize(), 10);
 }
+
+TEST(HashTableTest, countDuplicatesTest) {
+    std::vector<int> testArray = { 1, 2, 2, 3, 3, 3, 4, 4, 4, 4 };
+
+    HashTable<int, int> counts = countDuplicates(testArray);
+
+    /*std::cout << "Contents of HashTable:\n";
+    for (int i = 1; i <= 4; ++i) {
+        if (counts.search(i) != nullptr) {
+            std::cout << i << ": " << *counts.search(i) << std::endl;
+        }
+    }*/
+
+    EXPECT_TRUE(*(counts.search(1)) == 1);
+    EXPECT_TRUE(*(counts.search(2)) == 2);
+    EXPECT_TRUE(*(counts.search(3)) == 3);
+    EXPECT_TRUE(*(counts.search(4)) == 4);
+}

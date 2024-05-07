@@ -18,32 +18,25 @@ private:
     std::vector<std::list<HashNode>> table;
 
     size_t hash(const K& key) const {
-        const double A = 0.6180339887;
-        size_t hashValue = static_cast<size_t>(_size * (std::fmod(key * A, 1)));
-        return hashValue;
+        const double A = (std::sqrt(5) - 1) / 2;
+        return static_cast<size_t>(_size * (key * A - static_cast<size_t>(key * A)));
     }
 
 public:
     HashTable(size_t tableSize) : _size(tableSize), table(tableSize) {}
-    HashTable(const size_t size, const K& min_k, const K& max_k, const size_t min_v, const size_t max_v) {
-        if (size == 0)
+    HashTable(size_t tableSize, const K& min_k, const K& max_k, const T& min_v, const T& max_v) : _size(tableSize), table(tableSize) {
+        if (tableSize == 0)
             throw std::invalid_argument("Size = 0");
 
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<K> key_dist(min_k, max_k);
+        std::uniform_int_distribution<size_t> value_dist(min_v, max_v);
 
-        _size = 0;
-        table.resize(size);
-
-        for (size_t i = 0; i < size; ++i) {
+        for (size_t i = 0; i < tableSize; ++i) {
             K random_key = key_dist(gen);
-            size_t len = std::uniform_int_distribution<size_t>(min_v, max_v)(gen);
-            T random_value;
-            random_value.reserve(len);
-            for (size_t j = 0; j < len; ++j) {
-                random_value += 'A' + (rand() % 26);
-            }
+            T random_value = value_dist(gen);
+
             insert(random_key, random_value);
         }
     }
@@ -139,3 +132,22 @@ public:
         return _size;
     }
 };
+
+template<typename T>
+HashTable<T, int> countDuplicates(const std::vector<T>& array) {
+    HashTable<T, int> counts(10);
+    for (const auto& num : array) {
+        if (counts.search(num) == nullptr) {
+            counts.insert(num, 1);
+        }
+        else {
+            *counts.search(num) += 1;
+        }
+    }
+
+    return counts;
+}
+
+
+
+
